@@ -1,3 +1,23 @@
+"""
+TO DO:
+
+Fix inconsistencies between (Command Orders)
+Change exit order of central hub
+TRIGGER LIST
+
+Bugs:
+    -Arilock "move" has no "stay"
+
+Functions for:
+    -Tablet
+    -inventory check
+
+Games for:
+    -Game console (needs 'A' key somewhere)
+    -Incubator
+    -Airlock Keypad
+"""
+
 print("""\u001b[31m
  █████╗ ██████╗  ██████╗  █████╗ ███████╗    ███████╗████████╗ █████╗ ████████╗██╗ ██████╗ ███╗   ██╗
 ██╔══██╗██╔══██╗██╔════╝ ██╔══██╗██╔════╝    ██╔════╝╚══██╔══╝██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║
@@ -33,6 +53,7 @@ if x != "":
     print("\nSo basic instructions are a problem already. Gotcha.")
 print("\nYour suit has finished booting, and is ready to take you where you want")
 print("to go. A small hop, and you are floating in nothingness.")
+
 loc = "approach" # First location
 inv = [] # Player inventory
 game = True # Game is running and will recycle its locations
@@ -48,7 +69,8 @@ pad = False # Is the pad installed on its charger?
 poster = False # Was the poster read and the code known?
 crypto = False # Was the log read and crypto key downloaded? Is the Science Bay door open?
 plants = "maintain" # State of the incubator
-curtain = False
+curtain = False # Is the med bay curtain open?
+messlight = False # Is the light in the Mess Room on, and the writing visible?
 
 
 
@@ -311,6 +333,7 @@ after doing so.""")
         if arrive == True:
             print("""\nYou enter the tiny airlock, gently bumping into the body 
 floating here. It shows no reaction, other than drifting gently to the side. 
+
 Something terrible must have happened here, this place is a mess.""")
             arrive = False
         if innerdoor == False:
@@ -333,9 +356,9 @@ but to examine them from up close you'd have to go further inside.""")
                     print(x)
         elif action.lower() == "move":
             if innerdoor == False:
-                dir = input("Where do you want to go?\n(Exit)\n\u001b[31m----------------------------------\n>\u001b[0m ")
+                dir = input("\nWhere do you want to go?\n(Exit)\n\u001b[31m----------------------------------\n>\u001b[0m ")
             else:
-                dir = input("Where do you want to go?\n(Enter Station, Exit)\n\u001b[31m----------------------------------\n>\u001b[0m ")
+                dir = input("\nWhere do you want to go?\n(Enter Station, Exit)\n\u001b[31m----------------------------------\n>\u001b[0m ")
             if dir.lower() == "exit":
                 loc = "door"
                 arrive = True
@@ -422,6 +445,7 @@ you're one of the good guys.""")
             arrive = True
             while action.lower() == "examine terminal":
                 if arrive == True:
+                    arrive = False
                     print("""\nYou take a closer look at the terminal to see if you can get this thing 
 to work. It is in pieces, but after reconnecting the broken screen you find floating nearby
 and forcing a reset, you manage to get some life back into the terminal.""")
@@ -719,9 +743,8 @@ plants, growing towards the central light. The display of color and life is a br
 fresh air in this cramped metal box.""")
                 else:
                     print("Yeah no, that's not valid. Try again.")
-        else:
-            if action.lower() != "move":
-                print("Yeah no, that's not valid. Try again.")
+        elif action.lower() != "move":
+            print("Yeah no, that's not valid. Try again.")
         if action.lower() == "move":
             while action == "move":
                 dir = input("\nWhere do you want to go?\n(Stay, Airlock, Sleeping Quarter, Mess Room, Med Bay, Science Bay)\n\u001b[31m----------------------------------\n>\u001b[0m ")
@@ -746,7 +769,7 @@ fresh air in this cramped metal box.""")
                         print("The entrance appears to be locked from the other side. That's very")
                         print("unusual.")
                     else:
-                        loc = "medbay"
+                        loc = "med bay"
                         action = "null"
                         arrive = True
                 elif "science" in dir.lower():
@@ -911,13 +934,13 @@ cloud service.""")
                 print("""\nYou stare at the screen, and the one single file of interest.""")
                 if poster == True:
                     action2 = input("\nWhat do you do?\n(Leave, Open Log, Fix Log 2501)\n\u001b[31m----------------------------------\n>\u001b[0m ")
-                else: 
+                elif poster == False: 
                     action2 = input("\nWhat do you do?\n(Leave, Open Log)\n\u001b[31m----------------------------------\n>\u001b[0m ")
                 if action2.lower() == "leave":
                     action = "null"
                     print("""\nAn indicator shows that the pad's battery is broken, so you leave it hanging from its
 magnetic charger.""")
-                elif "fix" in action2.lower:
+                elif "fix" in action2.lower():
                     if poster == True:
                         crypto = True
                         print("""\nUsing the search function, you locate the file easily. It takes some novice level 
@@ -943,7 +966,7 @@ fetus became clear. She lived no longer than mere seconds.
 I couldn't bring myself to just... Dispose of her. We wrapped her in a blanket and 
 pushed her off into deep space, but...
 The gravity of the space station pulled her back. She is on the outside of the hull now.""")
-                        input("\nPress ENTER to continue.")
+                        input("\nPress ENTER to continue.\n\u001b[31m----------------------------------\n> \u001b[0m")
                         print("""\nI think that's when John finally broke. He became violent. Aggressive towards me. I was
 sure he would kill me.
 So while he was out trying to fix external comms, I locked the hatch. I didn't want to
@@ -1150,7 +1173,7 @@ the room is otherwise empty.""")
             dir = input("\nWhere do you want to go?\n(Stay, Central Hub)\n\u001b[31m----------------------------------\n> \u001b[0m")
             if dir.lower() == "stay":
                 print("\nYou change your mind and decide to stay.")
-            elif dir.lower == "central hub":
+            elif dir.lower() == "central hub":
                 loc = "center"
                 arrive = True
             else:
@@ -1249,7 +1272,7 @@ silence, your heartbeat the only audible element left.
 
 Only now do you realize that, unless the power switches back on automatically, you may
 be trapped in this station.
-You realize that you are holding your breath.
+You also realize that you are holding your breath.
 
 Just as you turn your head to search for any indication of progress, another bang sounds
 and the lights go back on. Light floods the room once again and you hear all sorts of 
@@ -1276,7 +1299,7 @@ out what it's good for. You decide to keep it, adding it to the arsenal in your 
 pocket.""")
         else:
             print("\nyeah no, that's not valid. Try again.")
-#MED BAY
+# MED BAY
     while loc == "med bay":
         if arrive == True:
             arrive = False
@@ -1296,7 +1319,7 @@ for the emergency bot, which would activate in case of an emergency.
 
 The curtain to the operations table is closed, obscuring your view. A note hangs pinned
 to it.""")
-        action = input("What do you do?\n(Check, Move, Examine Robot, Read Note, Open Curtain)\n\u001b[31m----------------------------------\n> \u001b[0m")
+        action = input("\nWhat do you do?\n(Check, Move, Examine Robot, Read Note, Open Curtain)\n\u001b[31m----------------------------------\n> \u001b[0m")
         if action.lower() == "check":
             print("\nYour suit is in good condition and has enough oxygen left.")
             print("The micro-gravity is giving you a slight headache.")
@@ -1307,7 +1330,7 @@ to it.""")
                 for x in inv:
                     print(x)
         elif action == "Move":
-            dir = input("Where do you want to go?\n(Stay, Central Hub)")
+            dir = input("\nWhere do you want to go?\n(Stay, Central Hub)")
             if dir.lower() == "stay":
                 print("\nYou change your mind and turn back.")
             elif dir.lower() == "central hub":
@@ -1330,10 +1353,10 @@ die.""")
             print("""\nYou float over to the curtain and pluck the note from it.
             
 ----------
-"I have finally been able to hack the medbot enough to convince it to aid me
+I have finally been able to hack the medbot enough to convince it to aid me
 in what I want most. I am leaving.
 
-Who ever reads this, don't tell my family what happened."
+Who ever reads this, don't tell my family what happened.
 ----------
 
 The note is signed "Lisa" and there is a time and date written below. You check your watch, 
@@ -1412,7 +1435,7 @@ final wish will not be repected. It only fits her fortune all too well.
 Could they ever have suspected? When they entered the station, preparing for their research.
 Could they have known that this was possible? How it would end?
 
-As the station disappears from sensor range, the feeling of loneliness comes to rest on
+As the station disappears from sensor range, a feeling of loneliness comes to rest on
 you like the promise of death's cold hand. You think of all the people who met similar
 fates, who were never discovered. Who died in the infinite emptiness without the slightest
 meaning or consequence. All it takes is a faulty engine.
